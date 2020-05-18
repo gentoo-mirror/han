@@ -11,7 +11,6 @@ EGIT_REPO_URI="https://github.com/autotrace/autotrace.git"
 
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64"
 IUSE="imagemagick +png pstoedit static-libs"
 
 BDEPEND="
