@@ -3,3 +3,5 @@
 # * generated automatically using pmaint *
 
 media-gfx/autotrace:pstoedit - Enable support for media-gfx/pstoedit
+media-gfx/pstoedit:emf - Enable support for media-libs/libemf
+media-gfx/pstoedit:pptx - Enable support for generating PowerPoint pptx files
