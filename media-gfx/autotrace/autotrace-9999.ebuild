@@ -9,7 +9,7 @@ DESCRIPTION="A program for converting bitmaps to vector graphics"
 HOMEPAGE="http://autotrace.sourceforge.net/"
 EGIT_REPO_URI="https://github.com/autotrace/autotrace.git"
 
-LICENSE="GPL-2 LGPL-2.1"
+LICENSE="GPL-2+ LGPL-2.1+"
 SLOT="0"
 IUSE="imagemagick +png pstoedit static-libs"
 
