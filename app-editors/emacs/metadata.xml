@@ -40,6 +40,8 @@
     of the internal Lisp implementations</flag>
   <flag name="mailutils">Retrieve e-mail using <pkg>net-mail/mailutils</pkg>
     instead of the internal movemail substitute</flag>
+  <flag name="native-comp">Use libgccjit to natively compile Emacs Lisp for
+    increased performance (gccemacs)</flag>
   <flag name="source">Install C source files and make them available for
     find-function</flag>
   <flag name="threads">Add elisp threading support</flag>

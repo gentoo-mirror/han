@@ -8,6 +8,8 @@ inherit autotools elisp-common flag-o-matic readme.gentoo-r1
 if [[ ${PV##*.} = 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://git.savannah.gnu.org/git/emacs.git"
+	# To obtain both master and feature/native-comp branches
+	EGIT_MIN_CLONE_TYPE="mirror"
 	EGIT_BRANCH="master"
 	EGIT_CHECKOUT_DIR="${WORKDIR}/emacs"
 	S="${EGIT_CHECKOUT_DIR}"
@@ -32,7 +34,7 @@ HOMEPAGE="https://www.gnu.org/software/emacs/"
 
 LICENSE="GPL-3+ FDL-1.3+ BSD HPND MIT W3C unicode PSF-2"
 SLOT="28-vcs"
-IUSE="acl alsa aqua athena cairo dbus dynamic-loading games gconf gfile gif +gmp gpm gsettings gtk gtk2 gzip-el harfbuzz imagemagick +inotify jpeg json kerberos lcms libxml2 livecd m17n-lib mailutils motif png selinux sound source ssl svg systemd +threads tiff toolkit-scroll-bars wide-int X Xaw3d xft +xpm xwidgets zlib"
+IUSE="acl alsa aqua athena cairo dbus dynamic-loading games gconf gfile gif +gmp gpm gsettings gtk gtk2 gzip-el harfbuzz imagemagick +inotify jpeg json kerberos lcms libxml2 livecd m17n-lib mailutils motif native-comp png selinux sound source ssl svg systemd +threads tiff toolkit-scroll-bars wide-int X Xaw3d xft +xpm xwidgets zlib"
 REQUIRED_USE="?? ( aqua X )"
 RESTRICT="test"
 
@@ -51,6 +53,7 @@ RDEPEND=">=app-emacs/emacs-common-gentoo-1.5[games?,X?]
 	libxml2? ( >=dev-libs/libxml2-2.2.0 )
 	mailutils? ( net-mail/mailutils[clients] )
 	!mailutils? ( net-libs/liblockfile )
+	native-comp? ( >=sys-devel/gcc-5[jit] )
 	selinux? ( sys-libs/libselinux )
 	ssl? ( net-libs/gnutls:0= )
 	systemd? ( sys-apps/systemd )
@@ -134,10 +137,15 @@ SITEFILE="20${EMACS_SUFFIX}-gentoo.el"
 
 src_prepare() {
 	if [[ ${PV##*.} = 9999 ]]; then
+		local branch="${EGIT_BRANCH}"
+		if use native-comp; then
+			branch="feature/native-comp"
+			git checkout "${branch}" || die "Could not switch to ${branch} branch"
+		fi
 		FULL_VERSION=$(sed -n 's/^AC_INIT([^,]*,[ \t]*\([^ \t,)]*\).*/\1/p' \
 			configure.ac)
 		[[ ${FULL_VERSION} ]] || die "Cannot determine current Emacs version"
-		einfo "Emacs branch: ${EGIT_BRANCH}"
+		einfo "Emacs branch: ${branch}"
 		einfo "Commit: ${EGIT_VERSION}"
 		einfo "Emacs version number: ${FULL_VERSION}"
 		[[ ${FULL_VERSION} =~ ^${PV%.*}(\..*)?$ ]] \
@@ -274,6 +282,7 @@ src_configure() {
 		$(use_with lcms lcms2) \
 		$(use_with libxml2 xml2) \
 		$(use_with mailutils) \
+		$(use_with native-comp nativecomp) \
 		$(use_with selinux) \
 		$(use_with ssl gnutls) \
 		$(use_with systemd libsystemd) \
