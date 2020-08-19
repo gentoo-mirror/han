@@ -1,0 +1,12 @@
+DEFINED_PHASES=install postinst postrm setup
+DEPEND=X? ( >=x11-apps/mkfontscale-1.2.0 media-fonts/encodings )
+DESCRIPTION=A fork of the Linux Libertine and Linux Biolinum fonts
+EAPI=7
+HOMEPAGE=https://github.com/alerque/libertinus
+IUSE=X
+KEYWORDS=~amd64
+LICENSE=OFL-1.1
+SLOT=0
+SRC_URI=https://github.com/alerque/libertinus/releases/download/v7.000/Libertinus-7.000.tar.xz
+_eclasses_=font	dd073b36fe3fd8b868c23bc23209db45
+_md5_=0157d920985c840bf023368fc9c5715f
