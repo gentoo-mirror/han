@@ -60,7 +60,7 @@ RDEPEND="app-emacs/emacs-common-gentoo[games?,gui(-)?]
 	libxml2? ( >=dev-libs/libxml2-2.2.0 )
 	mailutils? ( net-mail/mailutils[clients] )
 	!mailutils? ( net-libs/liblockfile )
-	native-comp? ( >=sys-devel/gcc-5[jit] )
+	native-comp? ( >=sys-devel/gcc-5:*[jit] )
 	selinux? ( sys-libs/libselinux )
 	ssl? ( net-libs/gnutls:0= )
 	systemd? ( sys-apps/systemd )
@@ -300,10 +300,13 @@ src_configure() {
 		${myconf}
 }
 
-#src_compile() {
+src_compile() {
 #	# Disable sandbox when dumping. For the unbelievers, see bug #131505
 #	emake RUN_TEMACS="SANDBOX_ON=0 LD_PRELOAD= env ./temacs"
-#}
+
+	# Flag only has an effect when native-comp is enabled
+	emake NATIVE_FULL_AOT=1
+}
 
 src_install() {
 	emake DESTDIR="${D}" NO_BIN_LINK=t install
