@@ -320,11 +320,21 @@ src_install() {
 	touch "${ED}"/usr/share/info/${EMACS_SUFFIX}/.keepinfodir
 	docompress -x /usr/share/info/${EMACS_SUFFIX}/dir.orig
 
+	# do not delete natively compiled files
+	if use native-comp; then
+		mv "${ED}"/usr/$(get_libdir)/emacs/${FULL_VERSION}/native-lisp "${T}"/tmp-native-lisp
+	fi
+
 	# avoid collision between slots, see bug #169033 e.g.
 	rm "${ED}"/usr/share/emacs/site-lisp/subdirs.el
 	rm -rf "${ED}"/usr/share/{appdata,applications,icons}
 	rm -rf "${ED}/usr/$(get_libdir)"
 	rm -rf "${ED}"/var
+
+	if use native-comp; then
+		mkdir -p "${ED}"/usr/$(get_libdir)/emacs/${FULL_VERSION}/
+		mv "${T}"/tmp-native-lisp "${ED}"/usr/$(get_libdir)/emacs/${FULL_VERSION}/native-lisp
+	fi
 
 	# remove unused <version>/site-lisp dir
 	rm -rf "${ED}"/usr/share/emacs/${FULL_VERSION}/site-lisp
