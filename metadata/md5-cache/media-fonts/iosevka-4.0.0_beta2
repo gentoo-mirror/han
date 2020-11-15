@@ -8,6 +8,6 @@ IUSE=X
 KEYWORDS=~amd64
 LICENSE=OFL-1.1
 SLOT=0
-SRC_URI=https://github.com/be5invis/iosevka/releases/download/v4.0.0-beta.1/ttf-iosevka-4.0.0-beta.1.zip
+SRC_URI=https://github.com/be5invis/iosevka/releases/download/v4.0.0-beta.2/ttf-iosevka-4.0.0-beta.2.zip
 _eclasses_=font	dd073b36fe3fd8b868c23bc23209db45
 _md5_=acf84b2e1c99f93cc2d061f0b0fdfec7
