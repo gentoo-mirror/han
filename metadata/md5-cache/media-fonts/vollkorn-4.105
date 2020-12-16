@@ -9,5 +9,5 @@ KEYWORDS=~amd64
 LICENSE=OFL-1.1
 SLOT=0
 SRC_URI=http://vollkorn-typeface.com/download/vollkorn-4-105.zip
-_eclasses_=font	dd073b36fe3fd8b868c23bc23209db45
+_eclasses_=font	e052246186f22bd6a37797238374613b
 _md5_=7837ad5ca9a977d69d66bd18d7739228
