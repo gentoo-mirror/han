@@ -1,11 +1,12 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 inherit font
 
-MY_P="Libertinus-${PV}"
+COMMIT="g53ece34"
+MY_P="Libertinus-${PV}-r0-${COMMIT}"
 
 DESCRIPTION="A fork of the Linux Libertine and Linux Biolinum fonts"
 HOMEPAGE="https://github.com/alerque/libertinus"
