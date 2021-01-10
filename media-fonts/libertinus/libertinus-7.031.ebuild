@@ -5,8 +5,7 @@ EAPI=7
 
 inherit font
 
-COMMIT="g53ece34"
-MY_P="Libertinus-${PV}-r0-${COMMIT}"
+MY_P="Libertinus-${PV}"
 
 DESCRIPTION="A fork of the Linux Libertine and Linux Biolinum fonts"
 HOMEPAGE="https://github.com/alerque/libertinus"
