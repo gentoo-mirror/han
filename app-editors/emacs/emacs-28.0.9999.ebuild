@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -290,7 +290,7 @@ src_configure() {
 		$(use_with lcms lcms2) \
 		$(use_with libxml2 xml2) \
 		$(use_with mailutils) \
-		$(use_with native-comp nativecomp) \
+		$(use_with native-comp native-compilation) \
 		$(use_with selinux) \
 		$(use_with ssl gnutls) \
 		$(use_with systemd libsystemd) \
