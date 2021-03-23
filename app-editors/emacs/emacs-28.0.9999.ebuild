@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools elisp-common flag-o-matic readme.gentoo-r1
+inherit autotools elisp-common flag-o-matic readme.gentoo-r1 toolchain-funcs
 
 if [[ ${PV##*.} = 9999 ]]; then
 	inherit git-r3
@@ -31,21 +31,21 @@ else
 		SRC_URI="https://dev.gentoo.org/~ulm/distfiles/${P}.tar.xz"
 		S="${WORKDIR}/emacs"
 	elif [[ ${PV//[0-9]} != "." ]]; then
-		SRC_URI="mirror://gnu-alpha/emacs/pretest/${PN}-${PV/_/-}.tar.xz"
+		SRC_URI="https://alpha.gnu.org/gnu/emacs/pretest/${PN}-${PV/_/-}.tar.xz"
 	fi
 	SLOT="${PV%%.*}"
 	[[ ${PV} == *.*.* ]] && SLOT+="-vcs"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
 fi
 
 DESCRIPTION="The extensible, customizable, self-documenting real-time display editor"
 HOMEPAGE="https://www.gnu.org/software/emacs/"
 
 LICENSE="GPL-3+ FDL-1.3+ BSD HPND MIT W3C unicode PSF-2"
-IUSE="acl alsa aqua athena cairo dbus dynamic-loading games gconf gfile gif +gmp gpm gsettings gtk gtk2 gui gzip-el harfbuzz imagemagick +inotify jpeg json kerberos lcms libxml2 livecd m17n-lib mailutils motif native-comp png selinux sound source ssl svg systemd +threads tiff toolkit-scroll-bars wide-int Xaw3d xft +xpm xwidgets zlib"
+IUSE="acl alsa aqua athena cairo dbus dynamic-loading games gconf gfile gif +gmp gpm gsettings gtk gui gzip-el harfbuzz imagemagick +inotify jpeg json kerberos lcms libxml2 livecd m17n-lib mailutils native-comp png selinux sound source ssl svg systemd +threads tiff toolkit-scroll-bars wide-int Xaw3d xft +xpm xwidgets zlib"
 RESTRICT="test"
 
-RDEPEND="app-emacs/emacs-common-gentoo[games?,gui(-)?]
+RDEPEND="app-emacs/emacs-common[games?,gui(-)?]
 	sys-libs/ncurses:0=
 	acl? ( virtual/acl )
 	alsa? ( media-libs/alsa-lib )
@@ -59,7 +59,7 @@ RDEPEND="app-emacs/emacs-common-gentoo[games?,gui(-)?]
 	lcms? ( media-libs/lcms:2 )
 	libxml2? ( >=dev-libs/libxml2-2.2.0 )
 	mailutils? ( net-mail/mailutils[clients] )
-	!mailutils? ( net-libs/liblockfile )
+	!mailutils? ( acct-group/mail net-libs/liblockfile )
 	native-comp? ( >=sys-devel/gcc-5:*[jit] )
 	selinux? ( sys-libs/libselinux )
 	ssl? ( net-libs/gnutls:0= )
@@ -97,34 +97,23 @@ RDEPEND="app-emacs/emacs-common-gentoo[games?,gui(-)?]
 			)
 		)
 		gtk? (
-			gtk2? ( x11-libs/gtk+:2 )
-			!gtk2? (
-				x11-libs/gtk+:3
-				xwidgets? (
-					net-libs/webkit-gtk:4=
-					x11-libs/libXcomposite
-				)
+			x11-libs/gtk+:3
+			xwidgets? (
+				net-libs/webkit-gtk:4=
+				x11-libs/libXcomposite
 			)
 		)
 		!gtk? (
-			motif? (
-				>=x11-libs/motif-2.3:0
-				x11-libs/libXpm
+			Xaw3d? (
+				x11-libs/libXaw3d
 				x11-libs/libXmu
 				x11-libs/libXt
 			)
-			!motif? (
-				Xaw3d? (
-					x11-libs/libXaw3d
-					x11-libs/libXmu
-					x11-libs/libXt
-				)
-				!Xaw3d? ( athena? (
-					x11-libs/libXaw
-					x11-libs/libXmu
-					x11-libs/libXt
-				) )
-			)
+			!Xaw3d? ( athena? (
+				x11-libs/libXaw
+				x11-libs/libXmu
+				x11-libs/libXt
+			) )
 		)
 	) )"
 
@@ -230,28 +219,16 @@ src_configure() {
 				Your version of GTK+ will have problems with closing open
 				displays. This is no problem if you just use one display, but
 				if you use more than one and close one of them Emacs may crash.
-				See <https://bugzilla.gnome.org/show_bug.cgi?id=85715>.
+				See <https://gitlab.gnome.org/GNOME/gtk/-/issues/221> and
+				<https://gitlab.gnome.org/GNOME/gtk/-/issues/2315>.
 				If you intend to use more than one display, then it is strongly
-				recommended that you compile Emacs with the Athena/Lucid or the
-				Motif toolkit instead.
+				recommended that you compile Emacs with the Athena/Lucid
+				toolkit instead.
 			EOF
-			if use gtk2; then
-				myconf+=" --with-x-toolkit=gtk2 --without-xwidgets"
-				use xwidgets && ewarn \
-					"USE flag \"xwidgets\" has no effect if \"gtk2\" is set."
-			else
-				myconf+=" --with-x-toolkit=gtk3 $(use_with xwidgets)"
-			fi
-			for f in motif Xaw3d athena; do
-				use ${f} && ewarn \
-					"USE flag \"${f}\" has no effect if \"gtk\" is set."
-			done
-		elif use motif; then
-			einfo "Configuring to build with Motif toolkit"
-			myconf+=" --with-x-toolkit=motif"
+			myconf+=" --with-x-toolkit=gtk3 $(use_with xwidgets)"
 			for f in Xaw3d athena; do
 				use ${f} && ewarn \
-					"USE flag \"${f}\" has no effect if \"motif\" is set."
+					"USE flag \"${f}\" has no effect if \"gtk\" is set."
 			done
 		elif use athena || use Xaw3d; then
 			einfo "Configuring to build with Athena/Lucid toolkit"
@@ -260,12 +237,19 @@ src_configure() {
 			einfo "Configuring to build with no toolkit"
 			myconf+=" --with-x-toolkit=no"
 		fi
-		if ! use gtk; then
-			use gtk2 && ewarn \
-				"USE flag \"gtk2\" has no effect if \"gtk\" is not set."
-			use xwidgets && ewarn \
-				"USE flag \"xwidgets\" has no effect if \"gtk\" is not set."
-		fi
+		! use gtk && use xwidgets && ewarn \
+			"USE flag \"xwidgets\" has no effect if \"gtk\" is not set."
+	fi
+
+	if tc-is-cross-compiler; then
+		# Configure a CBUILD directory when cross-compiling to make tools
+		mkdir "${S}-build" && pushd "${S}-build" >/dev/null || die
+		ECONF_SOURCE="${S}" econf_build --without-all --without-x-toolkit
+		popd >/dev/null || die
+		# Don't try to execute the binary for dumping during the build
+		myconf+=" --with-dumping=none"
+	else
+		myconf+=" --with-dumping=pdumper"
 	fi
 
 	econf \
@@ -277,8 +261,8 @@ src_configure() {
 		--without-compress-install \
 		--without-hesiod \
 		--without-pop \
-		--with-dumping=pdumper \
 		--with-file-notification=$(usev inotify || usev gfile || echo no) \
+		--with-pdumper \
 		$(use_enable acl) \
 		$(use_with dbus) \
 		$(use_with dynamic-loading modules) \
@@ -301,15 +285,22 @@ src_configure() {
 }
 
 src_compile() {
-#	# Disable sandbox when dumping. For the unbelievers, see bug #131505
-#	emake RUN_TEMACS="SANDBOX_ON=0 LD_PRELOAD= env ./temacs"
+	if tc-is-cross-compiler; then
+		# Build native tools for compiling lisp etc.
+		emake -C "${S}-build" src
+		emake lib	   # Cross-compile dependencies first for timestamps
+		# Save native build tools in the cross-directory
+		cp "${S}-build"/lib-src/make-{docfile,fingerprint} lib-src || die
+		# Specify the native Emacs to compile lisp
+		emake -C lisp all EMACS="${S}-build/src/emacs"
+	fi
 
 	# Flag only has an effect when native-comp is enabled
 	emake NATIVE_FULL_AOT=1
 }
 
 src_install() {
-	emake DESTDIR="${D}" NO_BIN_LINK=t install
+	emake DESTDIR="${D}" NO_BIN_LINK=t BLESSMAIL_TARGET= install
 
 	mv "${ED}"/usr/bin/{emacs-${FULL_VERSION}-,}${EMACS_SUFFIX} || die
 	mv "${ED}"/usr/share/man/man1/{emacs-,}${EMACS_SUFFIX}.1 || die
@@ -319,6 +310,12 @@ src_install() {
 	mv "${ED}"/usr/share/info/${EMACS_SUFFIX}/dir{,.orig} || die
 	touch "${ED}"/usr/share/info/${EMACS_SUFFIX}/.keepinfodir
 	docompress -x /usr/share/info/${EMACS_SUFFIX}/dir.orig
+
+	# movemail must be setgid mail
+	if ! use mailutils; then
+		fowners root:mail /usr/libexec/emacs/${FULL_VERSION}/${CHOST}/movemail
+		fperms 2751 /usr/libexec/emacs/${FULL_VERSION}/${CHOST}/movemail
+	fi
 
 	# do not delete natively compiled files
 	if use native-comp; then
@@ -391,7 +388,7 @@ src_install() {
 
 	dodoc README BUGS CONTRIBUTE
 
-	if use aqua; then
+	if use gui && use aqua; then
 		dodir /Applications/Gentoo
 		rm -rf "${ED}"/Applications/Gentoo/${EMACS_SUFFIX^}.app
 		mv nextstep/Emacs.app \
@@ -406,14 +403,21 @@ src_install() {
 		it is strongly recommended that you use app-admin/emacs-updater
 		to rebuild all byte-compiled elisp files of the installed Emacs
 		packages."
-	use gui && DOC_CONTENTS+="\\n\\nYou need to install some fonts for Emacs.
-		Installing media-fonts/font-adobe-{75,100}dpi on the X server's
-		machine would satisfy basic Emacs requirements under X11.
-		See also https://wiki.gentoo.org/wiki/Xft_support_for_GNU_Emacs
-		for how to enable anti-aliased fonts."
-	use aqua && DOC_CONTENTS+="\\n\\n${EMACS_SUFFIX^}.app is in
-		\"${EPREFIX}/Applications/Gentoo\". You may want to copy or symlink
-		it into /Applications by yourself."
+	if use gui; then
+		DOC_CONTENTS+="\\n\\nYou need to install some fonts for Emacs.
+			Installing media-fonts/font-adobe-{75,100}dpi on the X server's
+			machine would satisfy basic Emacs requirements under X11.
+			See also https://wiki.gentoo.org/wiki/Xft_support_for_GNU_Emacs
+			for how to enable anti-aliased fonts."
+		use aqua && DOC_CONTENTS+="\\n\\n${EMACS_SUFFIX^}.app is in
+			\"${EPREFIX}/Applications/Gentoo\". You may want to copy or
+			symlink it into /Applications by yourself."
+	fi
+	tc-is-cross-compiler && DOC_CONTENTS+="\\n\\nEmacs did not write
+		a portable dump file due to being cross-compiled.
+		To create this file at run time, execute the following command:
+		\\n${EMACS_SUFFIX} --batch -Q --eval='(dump-emacs-portable
+		\"/usr/libexec/emacs/${FULL_VERSION}/${CHOST}/emacs.pdmp\")'"
 	readme.gentoo_create_doc
 }
 
