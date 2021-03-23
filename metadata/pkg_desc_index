@@ -1,7 +1,7 @@
 app-admin/autotrash 0.4.2: Script to automatically purge old trash
 app-editors/emacs 28.0.9999: The extensible, customizable, self-documenting real-time display editor
 dev-python/snakeviz 2.1.0 9999: An in-browser Python profile viewer
-media-fonts/iosevka 5.0.8: Coders' typeface, built from code
+media-fonts/iosevka 5.0.9: Coders' typeface, built from code
 media-fonts/libertinus 7.040: A fork of the Linux Libertine and Linux Biolinum fonts
 media-fonts/vollkorn 4.105: The free and healthy typeface for bread and butter use
 media-gfx/autotrace 9999: A program for converting bitmaps to vector graphics
