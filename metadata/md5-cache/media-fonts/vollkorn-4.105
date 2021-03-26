@@ -1,13 +1,13 @@
-BDEPEND=app-arch/unzip
+BDEPEND=app-arch/unzip X? ( >=x11-apps/mkfontscale-1.2.0 media-fonts/encodings )
 DEFINED_PHASES=install postinst postrm prepare setup
-DEPEND=X? ( >=x11-apps/mkfontscale-1.2.0 media-fonts/encodings )
 DESCRIPTION=The free and healthy typeface for bread and butter use
 EAPI=7
 HOMEPAGE=http://vollkorn-typeface.com
+INHERIT=font
 IUSE=X
 KEYWORDS=~amd64
 LICENSE=OFL-1.1
 SLOT=0
 SRC_URI=http://vollkorn-typeface.com/download/vollkorn-4-105.zip
-_eclasses_=font	dd073b36fe3fd8b868c23bc23209db45
+_eclasses_=font	0667878c2b594871023dd1833d05996f
 _md5_=7837ad5ca9a977d69d66bd18d7739228
