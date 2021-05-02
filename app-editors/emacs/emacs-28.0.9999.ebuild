@@ -8,8 +8,6 @@ inherit autotools elisp-common flag-o-matic readme.gentoo-r1 toolchain-funcs
 if [[ ${PV##*.} = 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://git.savannah.gnu.org/git/emacs.git"
-	# To obtain both master and feature/native-comp branches
-	EGIT_MIN_CLONE_TYPE="mirror"
 	EGIT_BRANCH="master"
 	EGIT_CHECKOUT_DIR="${WORKDIR}/emacs"
 	S="${EGIT_CHECKOUT_DIR}"
@@ -133,15 +131,10 @@ SITEFILE="20${EMACS_SUFFIX}-gentoo.el"
 
 src_prepare() {
 	if [[ ${PV##*.} = 9999 ]]; then
-		local branch="${EGIT_BRANCH}"
-		if use native-comp; then
-			branch="feature/native-comp"
-			git checkout "${branch}" || die "Could not switch to ${branch} branch"
-		fi
 		FULL_VERSION=$(sed -n 's/^AC_INIT([^,]*,[ \t]*\([^ \t,)]*\).*/\1/p' \
 			configure.ac)
 		[[ ${FULL_VERSION} ]] || die "Cannot determine current Emacs version"
-		einfo "Emacs branch: ${branch}"
+		einfo "Emacs branch: ${EGIT_BRANCH}"
 		einfo "Commit: ${EGIT_VERSION}"
 		einfo "Emacs version number: ${FULL_VERSION}"
 		[[ ${FULL_VERSION} =~ ^${PV%.*}(\..*)?$ ]] \
