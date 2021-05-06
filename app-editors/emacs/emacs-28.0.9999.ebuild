@@ -8,6 +8,8 @@ inherit autotools elisp-common flag-o-matic readme.gentoo-r1 toolchain-funcs
 if [[ ${PV##*.} = 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://git.savannah.gnu.org/git/emacs.git"
+	# To obtain both master and feature/pgtk branches
+	EGIT_MIN_CLONE_TYPE="mirror"
 	EGIT_BRANCH="master"
 	EGIT_CHECKOUT_DIR="${WORKDIR}/emacs"
 	S="${EGIT_CHECKOUT_DIR}"
@@ -40,8 +42,9 @@ DESCRIPTION="The extensible, customizable, self-documenting real-time display ed
 HOMEPAGE="https://www.gnu.org/software/emacs/"
 
 LICENSE="GPL-3+ FDL-1.3+ BSD HPND MIT W3C unicode PSF-2"
-IUSE="acl alsa aqua athena cairo dbus dynamic-loading games gconf gfile gif +gmp gpm gsettings gtk gui gzip-el harfbuzz imagemagick +inotify jpeg json kerberos lcms libxml2 livecd m17n-lib mailutils native-comp png selinux sound source ssl svg systemd +threads tiff toolkit-scroll-bars wide-int Xaw3d xft +xpm xwidgets zlib"
+IUSE="acl alsa aqua athena cairo dbus dynamic-loading games gconf gfile gif +gmp gpm gsettings gtk gui gzip-el harfbuzz imagemagick +inotify jpeg json kerberos lcms libxml2 livecd m17n-lib mailutils native-comp otf png pgtk selinux sound source ssl svg systemd +threads tiff toolkit-scroll-bars wide-int Xaw3d xft +xpm xwidgets zlib"
 RESTRICT="test"
+REQUIRED_USE="pgtk? ( cairo gtk )"
 
 RDEPEND="app-emacs/emacs-common[games?,gui(-)?]
 	sys-libs/ncurses:0=
@@ -64,19 +67,28 @@ RDEPEND="app-emacs/emacs-common[games?,gui(-)?]
 	systemd? ( sys-apps/systemd )
 	zlib? ( sys-libs/zlib )
 	gui? ( !aqua? (
-		x11-libs/libICE
-		x11-libs/libSM
-		x11-libs/libX11
-		x11-libs/libXext
-		x11-libs/libXfixes
-		x11-libs/libXinerama
-		x11-libs/libXrandr
-		x11-libs/libxcb
-		x11-misc/xbitmaps
+		!pgtk? (
+			x11-libs/libICE
+			x11-libs/libSM
+			x11-libs/libX11
+			x11-libs/libXext
+			x11-libs/libXfixes
+			x11-libs/libXinerama
+			x11-libs/libXrandr
+			x11-libs/libxcb
+			x11-misc/xbitmaps
+		)
 		gconf? ( >=gnome-base/gconf-2.26.2 )
 		gsettings? ( >=dev-libs/glib-2.28.6 )
 		gif? ( media-libs/giflib:0= )
 		jpeg? ( virtual/jpeg:0= )
+		pgtk? (
+			media-libs/fontconfig
+			media-libs/freetype
+			cairo? ( >=x11-libs/cairo-1.12.18 )
+			harfbuzz? ( media-libs/harfbuzz:0= )
+			otf? ( >=dev-libs/libotf-0.9.4 )
+		)
 		png? ( >=media-libs/libpng-1.4:0= )
 		svg? ( >=gnome-base/librsvg-2.0 )
 		tiff? ( media-libs/tiff:0 )
@@ -89,9 +101,9 @@ RDEPEND="app-emacs/emacs-common[games?,gui(-)?]
 			x11-libs/libXrender
 			cairo? ( >=x11-libs/cairo-1.12.18 )
 			harfbuzz? ( media-libs/harfbuzz:0= )
-			m17n-lib? (
+			otf? (
 				>=dev-libs/libotf-0.9.4
-				>=dev-libs/m17n-lib-1.5.1
+				m17n-lib? ( >=dev-libs/m17n-lib-1.5.1 )
 			)
 		)
 		gtk? (
@@ -116,7 +128,7 @@ RDEPEND="app-emacs/emacs-common[games?,gui(-)?]
 	) )"
 
 DEPEND="${RDEPEND}
-	gui? ( !aqua? ( x11-base/xorg-proto ) )"
+	gui? ( !aqua? ( !pgtk? ( x11-base/xorg-proto ) ) )"
 
 BDEPEND="app-eselect/eselect-emacs
 	sys-apps/texinfo
@@ -131,10 +143,15 @@ SITEFILE="20${EMACS_SUFFIX}-gentoo.el"
 
 src_prepare() {
 	if [[ ${PV##*.} = 9999 ]]; then
+		local branch="${EGIT_BRANCH}"
+		if use pgtk; then
+			branch="feature/pgtk"
+			git checkout "${branch}" || die "Could not switch to ${branch} branch"
+		fi
 		FULL_VERSION=$(sed -n 's/^AC_INIT([^,]*,[ \t]*\([^ \t,)]*\).*/\1/p' \
 			configure.ac)
 		[[ ${FULL_VERSION} ]] || die "Cannot determine current Emacs version"
-		einfo "Emacs branch: ${EGIT_BRANCH}"
+		einfo "Emacs branch: ${branch}"
 		einfo "Commit: ${EGIT_VERSION}"
 		einfo "Emacs version number: ${FULL_VERSION}"
 		[[ ${FULL_VERSION} =~ ^${PV%.*}(\..*)?$ ]] \
@@ -177,7 +194,7 @@ src_configure() {
 		myconf+=" --with-ns --disable-ns-self-contained"
 		myconf+=" --without-x"
 	else
-		myconf+=" --with-x --without-ns"
+		myconf+=" --without-ns"
 		myconf+=" $(use_with gconf)"
 		myconf+=" $(use_with gsettings)"
 		myconf+=" $(use_with toolkit-scroll-bars)"
@@ -189,18 +206,37 @@ src_configure() {
 		myconf+=" $(use_with xpm)"
 		myconf+=" $(use_with imagemagick)"
 
-		if use xft; then
+		if use pgtk; then
+			myconf+=" --without-x"
+			myconf+=" $(use_with cairo)"
+			myconf+=" $(use_with harfbuzz)"
+			myconf+=" $(use_with otf libotf)"
+			use xft && ewarn \
+				"USE flag \"xft\" has no effect if \"pgtk\" is set."
+			use m17n-lib && ewarn \
+				"USE flag \"m17n-lib\" has no effect if \"pgtk\" is set."
+		elif use xft; then
+			myconf+=" --with-x"
 			myconf+=" --with-xft"
 			myconf+=" $(use_with cairo)"
 			myconf+=" $(use_with harfbuzz)"
-			myconf+=" $(use_with m17n-lib libotf)"
-			myconf+=" $(use_with m17n-lib m17n-flt)"
+			myconf+=" $(use_with otf libotf)"
+			if use otf; then
+				myconf+=" $(use_with m17n-lib m17n-flt)"
+			else
+				myconf+=" --without-m17n-flt"
+				use m17n-lib && ewarn \
+					"USE flag \"m17n-lib\" has no effect if \"otf\" is not set."
+			fi
 		else
+			myconf+=" --with-x"
 			myconf+=" --without-xft"
 			myconf+=" --without-cairo"
 			myconf+=" --without-libotf --without-m17n-flt"
 			use cairo && ewarn \
-				"USE flag \"cairo\" has no effect if \"xft\" is not set."
+				"USE flag \"cairo\" has no effect if \"pgtk\" or \"xft\" is not set."
+			use otf && ewarn \
+				"USE flag \"otf\" has no effect if \"pgtk\" or \"xft\" is not set."
 			use m17n-lib && ewarn \
 				"USE flag \"m17n-lib\" has no effect if \"xft\" is not set."
 		fi
@@ -208,17 +244,22 @@ src_configure() {
 		local f line
 		if use gtk; then
 			einfo "Configuring to build with GIMP Toolkit (GTK+)"
-			while read line; do ewarn "${line}"; done <<-EOF
-				Your version of GTK+ will have problems with closing open
-				displays. This is no problem if you just use one display, but
-				if you use more than one and close one of them Emacs may crash.
-				See <https://gitlab.gnome.org/GNOME/gtk/-/issues/221> and
-				<https://gitlab.gnome.org/GNOME/gtk/-/issues/2315>.
-				If you intend to use more than one display, then it is strongly
-				recommended that you compile Emacs with the Athena/Lucid
-				toolkit instead.
-			EOF
-			myconf+=" --with-x-toolkit=gtk3 $(use_with xwidgets)"
+			if use pgtk; then
+				myconf+=" --with-pgtk"
+			else
+				while read line; do ewarn "${line}"; done <<-EOF
+					Your version of GTK+ will have problems with closing open
+					displays. This is no problem if you just use one display, but
+					if you use more than one and close one of them Emacs may crash.
+					See <https://gitlab.gnome.org/GNOME/gtk/-/issues/221> and
+					<https://gitlab.gnome.org/GNOME/gtk/-/issues/2315>.
+					If you intend to use more than one display, then it is strongly
+					recommended that you compile Emacs with the Athena/Lucid
+					toolkit instead.
+				EOF
+				myconf+=" --with-x-toolkit=gtk3"
+			fi
+			myconf+=" $(use_with xwidgets)"
 			for f in Xaw3d athena; do
 				use ${f} && ewarn \
 					"USE flag \"${f}\" has no effect if \"gtk\" is set."
