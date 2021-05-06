@@ -16,6 +16,8 @@ app-editors/emacs:json - Compile with native JSON support using dev-libs/jansson
 app-editors/emacs:libxml2 - Use dev-libs/libxml2 to parse XML instead of the internal Lisp implementations
 app-editors/emacs:mailutils - Retrieve e-mail using net-mail/mailutils instead of the internal movemail substitute
 app-editors/emacs:native-comp - Use libgccjit to natively compile Emacs Lisp for increased performance (gccemacs)
+app-editors/emacs:otf - Use dev-libs/libotf to handle OpenType fonts (OTF)
+app-editors/emacs:pgtk - Use pure GTK without reliance on X libs
 app-editors/emacs:source - Install C source files and make them available for find-function
 app-editors/emacs:threads - Add elisp threading support
 app-editors/emacs:toolkit-scroll-bars - Use the selected toolkit's scrollbars in preference to Emacs' own scrollbars
