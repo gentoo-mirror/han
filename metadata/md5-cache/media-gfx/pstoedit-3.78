@@ -12,4 +12,4 @@ RDEPEND=media-libs/libpng:0= >=app-text/ghostscript-gpl-8.71-r1 emf? ( >=media-l
 SLOT=0
 SRC_URI=mirror://sourceforge/pstoedit/pstoedit-3.78.tar.gz
 _eclasses_=gnuconfig	b6b3e92f8b8c996400074b5f61a59256	toolchain-funcs	513c31b3346458ed1f3878b57da6d61c	multilib	c19072c3cd7ac5cb21de013f7e9832e0	libtool	9d3a9a889a6fa62ae794f817c156491b	autotools	6ae9a4347149b19a112caa1182d03bde
-_md5_=99da30e48d912e129f5253991d31abdb
+_md5_=74e9b41c1e79189f428ccd3280fe7cac
