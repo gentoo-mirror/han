@@ -5,4 +5,7 @@
     <flag name="emf">Enable support for <pkg>media-libs/libemf</pkg></flag>
     <flag name="pptx">Enable support for generating PowerPoint pptx files</flag>
   </use>
+  <upstream>
+    <remote-id type="sourceforge">pstoedit</remote-id>
+  </upstream>
 </pkgmetadata>
