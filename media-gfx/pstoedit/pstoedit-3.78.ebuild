@@ -25,7 +25,10 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 
-PATCHES=( "${FILESDIR}/${PN}"-3.75-libdl.patch )
+PATCHES=(
+	"${FILESDIR}/${PN}"-3.75-libdl.patch
+	"${FILESDIR}/${PN}"-3.75-gcc12.patch
+)
 
 src_prepare() {
 	default
