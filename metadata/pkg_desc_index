@@ -2,4 +2,4 @@ app-admin/autotrash 0.4.4 0.4.5: Script to automatically purge old trash
 media-fonts/libertinus 7.040: A fork of the Linux Libertine and Linux Biolinum fonts
 media-gfx/autotrace 9999: A program for converting bitmaps to vector graphics
 media-gfx/pstoedit 3.75 3.78: Translate PostScript and PDF graphics into other vector formats
-media-video/jftui 0.7.1: A minimalistic, lightweight command line client for the Jellyfin media server
+media-video/jftui 0.7.2: A minimalistic, lightweight command line client for the Jellyfin media server
