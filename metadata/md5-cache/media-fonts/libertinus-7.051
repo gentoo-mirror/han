@@ -1,0 +1,13 @@
+BDEPEND=X? ( >=x11-apps/mkfontscale-1.2.0 media-fonts/encodings )
+DEFINED_PHASES=install postinst postrm setup unpack
+DESCRIPTION=A fork of the Linux Libertine and Linux Biolinum fonts
+EAPI=7
+HOMEPAGE=https://github.com/alerque/libertinus
+INHERIT=font unpacker
+IUSE=X
+KEYWORDS=~amd64
+LICENSE=OFL-1.1
+SLOT=0
+SRC_URI=https://github.com/alerque/libertinus/releases/download/v7.051/Libertinus-7.051.tar.zst
+_eclasses_=font	aa113a3df9cd0a9693a1c1ee7c34a6eb	multiprocessing	1e32df7deee68372153dca65f4a7c21f	toolchain-funcs	d3d42b22a610ce81c267b644bcec9b87	multilib	b2a329026f2e404e9e371097dda47f96	unpacker	fb4b84181244b3b9990fa0bf40232dd2
+_md5_=da063226787ba6f078098488ad038c75
