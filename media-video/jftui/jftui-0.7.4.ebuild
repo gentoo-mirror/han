@@ -1,4 +1,4 @@
-# Copyright 2023 Gentoo Authors
+# Copyright 2023-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -13,7 +13,7 @@ KEYWORDS="~amd64"
 
 DEPEND="
 	net-misc/curl
-	>=media-video/mpv-0.23[libmpv,lua]
+	>=media-video/mpv-0.23:=[libmpv,lua]
 	>=dev-libs/yajl-2.0
 "
 RDEPEND="${DEPEND}"
